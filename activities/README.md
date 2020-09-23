@@ -1,10 +1,10 @@
-### week1_part1.sh
+1. week1_part1.sh
 
-#### Download RECS and extract columns by name
+Download RECS and extract columns by name
 
-### cutnames.sh
+2. cutnames.sh
 
-#### Modify the previous script into an executable program
+Modify the previous script into an executable program
 
-### week1_part2_args.sh
+3. week1_part2_args.sh
 
