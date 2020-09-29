@@ -24,3 +24,12 @@ Yingyi Yang: https://github.com/YingyiYang/Stats506_public
 * Week 2 - R syntax and reasoning activity
 
 * Week 3 - Git and Markdown activity
+
+### Weeks 4-6
+
+#### Group member links
+
+Zhihao Xu: https://github.com/ZhihaoXu/Stats506_public   
+Yingyi Yang: https://github.com/YingyiYang/Stats506_public    
+Dongyang Zhao: https://github.com/zhaodyleo/STATS506_F20     
+EunSeon Ahn: https://github.com/EunseonAhn/Stats506_public
