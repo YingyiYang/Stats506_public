@@ -6,7 +6,7 @@
 # Run as below:
 #  bash ./week1_part2_args.sh file_name pattern
 #
-# Author(s): James Henderson
+# Author(s): Yan Chen, Dongyang Zhao, Yingyi Yang
 # Updated: September 8, 2020
 # 79: -------------------------------------------------------------------------
 
