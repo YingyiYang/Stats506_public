@@ -4,7 +4,7 @@
 # This script serves as a template for Part 1 of 
 # the shell scripting activity for week 1. 
 #
-# Author(s): James Henderson
+# Author(s): Yan Chen, Dongyang Zhao, Yingyi Yang
 # Updated: August 16, 2020
 # 79: -------------------------------------------------------------------------
 
