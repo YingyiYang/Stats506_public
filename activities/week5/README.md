@@ -1,7 +1,7 @@
 
 ### Here is the plot for q1: Proportion of homes with internet access in each Census Division.
 
-![](./w4_p2_q1_plot.png)
+![](./w4_p2_q1_plot.png | width =10)
 
 ---
 
