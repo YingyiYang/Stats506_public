@@ -1,0 +1,102 @@
+---
+title: "week6"
+author: "Yingyi Yang, yyingyi@umich.edu"
+date: "10/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+### Part 1
+
+
+#### 1.
+
+```{r}
+# download data:
+url1 = paste(
+  "https://raw.githubusercontent.com/jbhender/Stats506_F20/master/",
+  "problem_sets/data/nhanes_demo.csv", sep = ""
+)
+data_file1 = "nhanes_demo.csv"
+if ( !file.exists(data_file1) ) {
+  download.file(url1,data_file1)
+}
+
+url2 = paste(
+  "https://raw.githubusercontent.com/jbhender/Stats506_F20/master/",
+  "problem_sets/data/nhanes_ohxden.csv", sep = ""
+)
+data_file2 = "nhanes_ohxden.csv"
+if ( !file.exists(data_file2) ) {
+  download.file(url2,data_file2)
+}
+```
+
+```{r}
+demo = read.csv(data_file1)
+ohxden = read.csv(data_file2)
+```
+
+#### 2.
+
+```{r}
+df2 = ohxden %>%
+  select(SEQN, OHDDESTS) %>%
+  left_join(demo, by = 'SEQN')
+```
+
+
+#### 3.
+
+
+```{r}
+df3 = df2 %>% 
+  select(id = SEQN, RIAGENDR, RIDAGEYR, RIDSTATR, OHDDESTS) %>%
+  mutate(under_20 = RIDAGEYR<20,
+         college = as.factor(RIDAGEYR<20))
+
+levels(df3$college)[levels(df3$college)=='FALSE'] = 'some college/college graduate'
+levels(df3$college)[levels(df3$college)=='TRUE']  = 'No college/<20'
+```
+
+#### 4.
+
+```{r}
+df4 = df3 %>%
+  mutate(
+    complete_ohx = ifelse( !is.na(ohx_status),
+                           (exam_status == 2 & ohx_status == 1), FALSE ),
+    ohx = ifelse(complete_ohx, 'complete', 'missing')
+  ) 
+```
+
+#### 5.
+
+```{r}
+df5 = df4 %>%
+  filter(RIDSTATR == 2)
+```
+
+
+### Part 2
+
+#### 1.
+
+```{r}
+df6 = df5 %>%
+  select(OHDDESTS, under_20, RIAGENDR, college) %>%
+  group_by(under_20, RIAGENDR, college) %>%
+  summarise(n=n()) %>%
+  mutate(pct=n/sum(n))
+
+```
+
+
+
