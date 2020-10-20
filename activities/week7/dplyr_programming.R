@@ -81,7 +81,9 @@ temps_by_region0 =
 temps_by_region1 = recs_core %>%
  group_by(region) %>%
  summarize(
-   across(starts_with("temp"), mean)
+   across(.cols = all_of(c('temp_home', 'temp_gone', 'temp_night')),
+          .fns = ~ sum(.x*weight)/sum(weight)),
+   .groups = 'drop'
  )
 
 ## task 2 - write a function using the pattern above
@@ -94,9 +96,10 @@ recs_mean0 = function(df, vars) {
   # Outputs: a tibble with one row (per group) as returned by summarize_at
 
   tab = df %>%
-    group_by(region) %>%
     summarize(
-      across({{vars}}, mean)
+      across(.cols = all_of(vars),
+             .fns = ~ sum(.x*weight)/sum(weight)),
+      .groups = 'drop'
     )
 }
 
@@ -114,8 +117,12 @@ add_groups = function(df, group = NULL) {
   #   group - (optional, defaults to NULL) a character vector of column
   #    names in df to form groups by.
 
-  tab = df %>%
-    group_by(.data[[group]])
+  if(!is.null(group)) {
+    stopifnot( all(group %in% names(df)))
+    for(g in group) {
+      df = df %>% group_by(.data[[g]], .add = TRUE)
+    }
+  }
   
 }
 
@@ -138,7 +145,9 @@ recs_mean1 = function(df, vars, group = NULL) {
   #<task 4b>
   tab = df1 %>%
     summarize(
-      across({{vars}}, mean)
+      across(.cols = all_of(vars),
+             .fns = ~ sum(.x*weight)/sum(weight)),
+      .groups = 'drop'
     )
 }
 
