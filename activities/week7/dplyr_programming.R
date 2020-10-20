@@ -8,7 +8,7 @@
 #   ?view=microdata
 #
 # Updated: October 20, 2020
-# Author: James Henderson
+# Author: Yingyi Yang
 # 79: -------------------------------------------------------------------------
  
 # run tests at the end?: ------------------------------------------------------
