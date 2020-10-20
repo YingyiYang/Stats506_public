@@ -52,18 +52,24 @@ df2 = ohxden %>%
   left_join(demo, by = 'SEQN')
 ```
 
-
 #### 3.
-
 
 ```{r}
 df3 = df2 %>% 
-  select(id = SEQN, RIAGENDR, RIDAGEYR, RIDSTATR, OHDDESTS) %>%
-  mutate(under_20 = RIDAGEYR<20,
-         college = as.factor(RIDAGEYR<20))
-
-levels(df3$college)[levels(df3$college)=='FALSE'] = 'some college/college graduate'
-levels(df3$college)[levels(df3$college)=='TRUE']  = 'No college/<20'
+  transmute(id = SEQN, 
+         gender = RIAGENDR, 
+         age = RIDAGEYR, 
+         under_20 = ifelse(age < 20, '<20', '20+'),
+         exam_status = RIDSTATR,
+         education = ifelse(is.na(DMDEDUC2), ifelse(age < 20, 10, NA), DMDEDUC2),
+         ohx_status = OHDDESTS
+         ) %>%
+  mutate(
+    college = ifelse(education %in% 4:5, 
+                     'College Graduate/Some College', 
+                     'No College/Age <20'),
+    gender = c('Male', 'Female')[gender]
+  )
 ```
 
 #### 4.
@@ -72,7 +78,7 @@ levels(df3$college)[levels(df3$college)=='TRUE']  = 'No college/<20'
 df4 = df3 %>%
   mutate(
     complete_ohx = ifelse( !is.na(ohx_status),
-                           (exam_status == 2 & ohx_status == 1), FALSE ),
+                           (exam_status == 2 & ohx_status == 1), FALSE),
     ohx = ifelse(complete_ohx, 'complete', 'missing')
   ) 
 ```
@@ -81,22 +87,98 @@ df4 = df3 %>%
 
 ```{r}
 df5 = df4 %>%
-  filter(RIDSTATR == 2)
+  filter(exam_status == 2)
 ```
 
 
 ### Part 2
 
-#### 1.
 
 ```{r}
-df6 = df5 %>%
-  select(OHDDESTS, under_20, RIAGENDR, college) %>%
-  group_by(under_20, RIAGENDR, college) %>%
+age = df5 %>% 
+  group_by(under_20, ohx) %>%
   summarise(n=n()) %>%
-  mutate(pct=n/sum(n))
+  pivot_wider(names_from = ohx, values_from = 'n')
+p_age = chisq.test(as.matrix(age[,-1]))$p.value
 
+age_tab = df5 %>%
+    group_by(under_20, ohx) %>%
+    summarize(n = n(), .groups = 'drop_last') %>%
+    mutate( pct = sprintf('%4.1f (%s)', 100 * n / sum(n), n) ) %>%
+    pivot_wider(
+      id_cols = under_20, 
+      names_from = ohx, 
+      values_from = 'pct'
+    ) %>%
+    ungroup() %>%
+  mutate(var = under_20, level = under_20, pval = p_age)
+```
+
+```{r}
+gender = df5 %>% 
+  group_by(gender, ohx) %>%
+  summarise(n=n()) %>%
+  pivot_wider(names_from = ohx, values_from = 'n')
+p_gender = chisq.test(as.matrix(gender[,-1]))$p.value
+
+gender_tab = df5 %>%
+    group_by(gender, ohx) %>%
+    summarize(n = n(), .groups = 'drop_last') %>%
+    mutate( pct = sprintf('%4.1f (%s)', 100 * n / sum(n), n) ) %>%
+    pivot_wider(
+      id_cols = gender, 
+      names_from = ohx, 
+      values_from = 'pct'
+    ) %>%
+    ungroup() %>%
+  mutate(var = gender, level = gender, pval = p_gender)
 ```
 
 
+```{r}
+college = df5 %>% 
+  group_by(college, ohx) %>%
+  summarise(n=n()) %>%
+  pivot_wider(names_from = ohx, values_from = 'n')
+p_college = chisq.test(as.matrix(college[,-1]))$p.value
 
+college_tab = df5 %>%
+    group_by(college, ohx) %>%
+    summarize(n = n(), .groups = 'drop_last') %>%
+    mutate( pct = sprintf('%4.1f (%s)', 100 * n / sum(n), n) ) %>%
+    pivot_wider(
+      id_cols = college, 
+      names_from = ohx, 
+      values_from = 'pct'
+    ) %>%
+    ungroup() %>%
+  mutate(var = college, level = college, pval = p_college)
+```
+
+
+```{r}
+row_vars = c('age', 'gender', 'college')
+
+tab_list = vector(mode = 'list', length = length(row_vars))
+names(tab_list) = row_vars
+
+for ( var in row_vars ) {
+  tab_list[[var]] = get(paste0(var,'_tab'))
+}
+
+tab1 = bind_rows(tab_list)
+```
+
+
+```{r}
+tab1_html = tab1 %>%
+  select(!var, Group = level, p = pval) %>%
+  knitr::kable(format = 'html') %>%
+  kableExtra::kable_styling("striped", full_width = TRUE) %>%
+  kableExtra::add_header_above(
+    header = c(' ' = 1, 'Dentition Exam' = 2, ' ' = 1)
+  ) %>%
+  kableExtra::group_rows("Age Group", start_row = 1, end_row = 2) %>%
+  kableExtra::group_rows("Gender", start_row = 3, end_row = 4) %>%
+  kableExtra::group_rows("Education", start_row = 5, end_row = 6) 
+```
