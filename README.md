@@ -32,4 +32,17 @@ Yingyi Yang: https://github.com/YingyiYang/Stats506_public
 Zhihao Xu: https://github.com/ZhihaoXu/Stats506_public   
 Yingyi Yang: https://github.com/YingyiYang/Stats506_public    
 Dongyang Zhao: https://github.com/zhaodyleo/STATS506_F20     
-EunSeon Ahn: https://github.com/EunseonAhn/Stats506_public
+EunSeon Ahn: https://github.com/EunseonAhn/Stats506_public 
+
+### Mid-term group project 
+
+#### Group member links 
+
+Aravind Mantravadi: https://github.com/aravind1338/Stats506_public
+Yan Chen: https://github.com/yanchannn/Stats506_public   
+Yingyi Yang: https://github.com/YingyiYang/Stats506_public
+
+### Group repo link 
+
+https://github.com/aravind1338/506F20GroupProject. 
+
