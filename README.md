@@ -38,9 +38,9 @@ EunSeon Ahn: https://github.com/EunseonAhn/Stats506_public
 
 #### Group member links 
 
-Aravind Mantravadi: https://github.com/aravind1338/Stats506_public
-Yan Chen: https://github.com/yanchannn/Stats506_public   
-Yingyi Yang: https://github.com/YingyiYang/Stats506_public
+Aravind Mantravadi: https://github.com/aravind1338/Stats506_public     
+Yan Chen: https://github.com/yanchannn/Stats506_public        
+Yingyi Yang: https://github.com/YingyiYang/Stats506_public      
 
 ### Group repo link 
 
