@@ -7,7 +7,7 @@
 # For each question, fill in the missing dplyr, SQL, or data.table 
 # translations.
 #
-# Author: Group X
+# Author: Group 7
 # Updated: November 17, 2020
 # 79: -------------------------------------------------------------------------
 
@@ -39,19 +39,21 @@ batting_dt[, .(playerID, yearID, league = lgID, stint)]
 
 # SQL
 query = 
-'
-# write SQL query here
+  '
+SELECT playerID, yearID, lgID as league, stint FROM BATTING
 '
 lahman %>% tbl(sql(query)) 
 
 # dplyr
+batting_dt %>%
+  select(playerID, yearID, league = lgID, stint)
 
 ## Question 2 #################################################################
 # compute the batting average = H / AB for each row (stint)
 
 # SQL
 query = 
-'
+  '
 SELECT playerID, yearID, lgID as league
        (Cast (H as Float) /  Cast (AB as Float) ) as avg
 FROM BATTING
@@ -61,22 +63,27 @@ lahman %>% tbl(sql(query)) %>% collect()
 # Note: R will handle the conversion of integers to numeric. 
 
 # data.table (compute in "j")
+batting_dt[, .(playerID, yearID, league = lgID, avg = H/AB)]  
 
-# dplyr 
+# dplyr
+batting_dt %>%
+  mutate(avg = H/AB) %>%
+  select(playerID, yearID, league = lgID, avg)
 
 ## Question 3 #################################################################
 # compute the maximum HBP in a "stint" (player season with a single team)
 
 # dplyr
-batting_tbl %>%
+test4=batting_tbl %>%
   summarize(max_HBP = max(HBP, na.rm = TRUE))
 
 # data.table (summarize in "j")
+batting_dt[, .(max_HBP = max(HBP))]
 
 # SQL
 query = 
-'
-# write SQL query here
+  '
+SELECT max(HBP) as max_HBP
 '
 lahman %>% tbl(sql(query)) 
 
@@ -88,12 +95,18 @@ batting_dt[ , .(avg = sum(H) / sum(AB)), .(playerID)]
 
 # SQL, cast integers to numeric following example in question 2
 query = 
+  '
+SELECT playerID, sum(Cast (H as Float) )/sum(Cast (AB as Float)) as avg
+FROM BATTING
+GROUP BY playerID
 '
-# write SQL query here
-'
-lahman %>% tbl(sql(query)) 
+lahman %>% tbl(sql(query)) %>% collect() 
 
 # dplyr
+batting_dt %>% group_by(playerID) %>% 
+  summarise(s1=sum(H), s2=sum(AB), avg=s1/s2) %>%
+  select(playerID, avg)
+
 
 ## Question 5 #################################################################
 # select rows for year 2016
@@ -104,11 +117,14 @@ batting_tbl %>%
   select(playerID, HBP)
 
 # data.table (subset in i)
+batting_dt
 
 # SQL
 query = 
-'
-# write SQL query here
+  '
+SELECT playerID, HBP
+FROM BATTING
+WHERE yearID = 2016
 '
 lahman %>% tbl(sql(query)) 
 
@@ -118,7 +134,7 @@ lahman %>% tbl(sql(query))
 
 #SQL: nested anonymous table, "HAVING"
 query = 
-'
+  '
 SELECT *
 FROM (
  SELECT playerID, sum(HR) as HR
@@ -132,8 +148,16 @@ ORDER BY -HR
 lahman %>% tbl(sql(query)) %>% collect()
 
 # data.table (use %>% with .[], or chaining dt[][])
+batting_dt[yearID > 1999, .(HR=sum(HR)), by=.(playerID)] %>%
+  .[order[~HR]] %>%
+  .[HR > 400]
 
 # dplyr
+batting_dt %>%
+  filter(yearID > 1999) %>%
+  select(playerID, HR) %>%
+  group_by(playerID) %>%
+  summarise(HR=sum(HR)) 
 
 ## Question 7 #################################################################
 # final the number of "20-20" seasons with 20+ SB and 20+ HR by a 
@@ -141,7 +165,7 @@ lahman %>% tbl(sql(query)) %>% collect()
 
 # SQL: 20-20
 query = 
-'
+  '
 SELECT yearID, COUNT(playerID) as N
 FROM (
  SELECT playerID, yearID, sum(SB) as SB, sum(HR) as HR
